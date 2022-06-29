@@ -6,5 +6,8 @@
   "repository": "n",
   "author": "mrenke",
   "license": "n",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "jimp": "0.6.4"
+  }
 }
