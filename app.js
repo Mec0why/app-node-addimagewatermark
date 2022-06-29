@@ -68,6 +68,11 @@ const startApp = async () => {
       },
     ]);
     options.watermarkText = text.value;
+    addTextWatermarkToImage(
+      './img/' + options.inputImage,
+      './test-with-watermark.jpg',
+      options.watermarkText
+    );
   } else {
     const image = await inquirer.prompt([
       {
@@ -78,6 +83,11 @@ const startApp = async () => {
       },
     ]);
     options.watermarkImage = image.filename;
+    addImageWatermarkToImage(
+      './img/' + options.inputImage,
+      './test-with-watermark.jpg',
+      './img/' + options.watermarkImage
+    );
   }
 };
 
