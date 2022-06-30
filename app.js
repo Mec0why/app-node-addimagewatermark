@@ -65,10 +65,12 @@ const startApp = async () => {
     },
   ]);
 
-  const checkSource = fs.existsSync('./img/' + options.inputImage);
+  if (options.watermarkType === 'Text watermark') {
+    const checkSource = fs.existsSync('./img/' + options.inputImage);
 
-  if (checkSource) {
-    if (options.watermarkType === 'Text watermark') {
+    if (!checkSource) {
+      console.log('The source file does not exist!');
+    } else {
       const text = await inquirer.prompt([
         {
           name: 'value',
@@ -82,27 +84,29 @@ const startApp = async () => {
         prepareOutputFilename(options.inputImage),
         options.watermarkText
       );
-    } else {
-      const checkWatermark = fs.existsSync('./img/' + options.watermarkImage);
-
-      if (checkWatermark) {
-        const image = await inquirer.prompt([
-          {
-            name: 'filename',
-            type: 'input',
-            message: 'Type your watermark name:',
-            default: 'logo.png',
-          },
-        ]);
-        options.watermarkImage = image.filename;
-        addImageWatermarkToImage(
-          './img/' + options.inputImage,
-          prepareOutputFilename(options.inputImage),
-          './img/' + options.watermarkImage
-        );
-      } else console.log('The Watermark file does not exist!');
     }
-  } else console.log('The source file does not exist!');
+  } else {
+    const checkWatermark = fs.existsSync('./img/' + options.watermarkImage);
+
+    if (!checkWatermark) {
+      console.log('The Watermark file does not exist!');
+    } else {
+      const image = await inquirer.prompt([
+        {
+          name: 'filename',
+          type: 'input',
+          message: 'Type your watermark name:',
+          default: 'logo.png',
+        },
+      ]);
+      options.watermarkImage = image.filename;
+      addImageWatermarkToImage(
+        './img/' + options.inputImage,
+        prepareOutputFilename(options.inputImage),
+        './img/' + options.watermarkImage
+      );
+    }
+  }
 };
 
 startApp();
