@@ -70,6 +70,7 @@ const startApp = async () => {
 
     if (!checkSource) {
       console.log('The source file does not exist!');
+      process.exit();
     } else {
       const text = await inquirer.prompt([
         {
@@ -86,27 +87,33 @@ const startApp = async () => {
       );
     }
   } else {
+    const image = await inquirer.prompt([
+      {
+        name: 'filename',
+        type: 'input',
+        message: 'Type your watermark name:',
+        default: 'logo.png',
+      },
+    ]);
+
+    options.watermarkImage = image.filename;
+
     const checkWatermark = fs.existsSync('./img/' + options.watermarkImage);
 
     if (!checkWatermark) {
       console.log('The Watermark file does not exist!');
+      process.exit();
     } else {
-      const image = await inquirer.prompt([
-        {
-          name: 'filename',
-          type: 'input',
-          message: 'Type your watermark name:',
-          default: 'logo.png',
-        },
-      ]);
-      options.watermarkImage = image.filename;
-      addImageWatermarkToImage(
+      await addImageWatermarkToImage(
         './img/' + options.inputImage,
         prepareOutputFilename(options.inputImage),
         './img/' + options.watermarkImage
       );
     }
   }
+
+  console.log('Watermark added successfully!');
+  startApp();
 };
 
 startApp();
