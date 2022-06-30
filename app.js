@@ -1,5 +1,6 @@
 const Jimp = require('jimp');
 const inquirer = require('inquirer');
+const fs = require('fs');
 
 const addTextWatermarkToImage = async function (inputFile, outputFile, text) {
   const image = await Jimp.read(inputFile);
@@ -64,36 +65,44 @@ const startApp = async () => {
     },
   ]);
 
-  if (options.watermarkType === 'Text watermark') {
-    const text = await inquirer.prompt([
-      {
-        name: 'value',
-        type: 'input',
-        message: 'Type your watermark text:',
-      },
-    ]);
-    options.watermarkText = text.value;
-    addTextWatermarkToImage(
-      './img/' + options.inputImage,
-      prepareOutputFilename(options.inputImage),
-      options.watermarkText
-    );
-  } else {
-    const image = await inquirer.prompt([
-      {
-        name: 'filename',
-        type: 'input',
-        message: 'Type your watermark name:',
-        default: 'logo.png',
-      },
-    ]);
-    options.watermarkImage = image.filename;
-    addImageWatermarkToImage(
-      './img/' + options.inputImage,
-      prepareOutputFilename(options.inputImage),
-      './img/' + options.watermarkImage
-    );
-  }
+  const checkSource = fs.existsSync('./img/' + options.inputImage);
+
+  if (checkSource) {
+    if (options.watermarkType === 'Text watermark') {
+      const text = await inquirer.prompt([
+        {
+          name: 'value',
+          type: 'input',
+          message: 'Type your watermark text:',
+        },
+      ]);
+      options.watermarkText = text.value;
+      addTextWatermarkToImage(
+        './img/' + options.inputImage,
+        prepareOutputFilename(options.inputImage),
+        options.watermarkText
+      );
+    } else {
+      const checkWatermark = fs.existsSync('./img/' + options.watermarkImage);
+
+      if (checkWatermark) {
+        const image = await inquirer.prompt([
+          {
+            name: 'filename',
+            type: 'input',
+            message: 'Type your watermark name:',
+            default: 'logo.png',
+          },
+        ]);
+        options.watermarkImage = image.filename;
+        addImageWatermarkToImage(
+          './img/' + options.inputImage,
+          prepareOutputFilename(options.inputImage),
+          './img/' + options.watermarkImage
+        );
+      } else console.log('The Watermark file does not exist!');
+    }
+  } else console.log('The source file does not exist!');
 };
 
 startApp();
